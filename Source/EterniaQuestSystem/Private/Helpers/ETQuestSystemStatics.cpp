@@ -94,28 +94,6 @@ void UETQuestSystemStatics::ReportQuestEvent(UETQuestEvent* QuestEvent) {
 	QuestSubsystem->OnEvent(QuestEvent);
 }
 
-void UETQuestSystemStatics::RegisterQuestDataTable(UDataTable* QuestDataTable) {
-	UWorld* World = GEngine->GetWorldFromContextObject(QuestDataTable, EGetWorldErrorMode::LogAndReturnNull);
-	if (!World) {
-		EQS_ULOGS_ERROR(TEXT("Failed to register quest data table: World is null"))
-		return;
-	}
-	
-	UGameInstance* GameInstance = World->GetGameInstance();
-	if (!GameInstance) {
-		EQS_ULOGS_ERROR(TEXT("Failed to register quest data table: GameInstance is null"))
-		return;
-	}
-	
-	UETQuestSubsystem* QuestSubsystem = GameInstance->GetSubsystem<UETQuestSubsystem>();
-	if (!QuestSubsystem) {
-		EQS_ULOGS_ERROR(TEXT("Failed to register quest data table: QuestSubsystem is null"))
-		return;
-	}
-	
-	QuestSubsystem->RegisterDataTable(QuestDataTable);
-}
-
 UDataTable* UETQuestSystemStatics::GetQuestDataTable(UObject* WorldContextObject) {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (World) {

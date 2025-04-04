@@ -45,9 +45,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
 	static void ReportQuestEvent(UETQuestEvent* QuestEvent);
 
-	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void RegisterQuestDataTable(UDataTable* QuestDataTable);
-
 private:
 	static UDataTable* GetQuestDataTable(UObject* WorldContextObject);
 };

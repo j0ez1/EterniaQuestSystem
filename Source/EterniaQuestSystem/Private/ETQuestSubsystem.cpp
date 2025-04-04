@@ -3,6 +3,7 @@
 
 #include "ETQuestSubsystem.h"
 
+#include "EterniaQuestSystemSettings.h"
 #include "GameFramework/PlayerState.h"
 #include "Components/ETQuestManagerComponent.h"
 #include "Helpers/ETLogging.h"
@@ -29,10 +30,6 @@ void UETQuestSubsystem::OnEvent(UETQuestEvent* QuestEvent) {
 	}
 }
 
-void UETQuestSubsystem::RegisterDataTable(UDataTable* InQuestDataTable) {
-	QuestDataTable = InQuestDataTable;
-}
-
 void UETQuestSubsystem::RegisterManagerListener(UETQuestManagerComponent* Listener) {
 	if (Listener == nullptr) return;
 
@@ -49,4 +46,17 @@ void UETQuestSubsystem::RegisterManagerListener(UETQuestManagerComponent* Listen
 
 UETQuestManagerComponent* UETQuestSubsystem::GetManagerListener(APlayerState* PlayerState) {
 	return ManagerListeners[PlayerState];
+}
+
+void UETQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
+	Super::Initialize(Collection);
+
+	LoadSettings();
+}
+
+void UETQuestSubsystem::LoadSettings() {
+	const UEterniaQuestSystemSettings* QuestSystemSettings = GetDefault<UEterniaQuestSystemSettings>();
+	if (QuestSystemSettings) {
+		QuestDataTable = QuestSystemSettings->QuestData.LoadSynchronous();
+	}
 }

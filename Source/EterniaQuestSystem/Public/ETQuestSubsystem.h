@@ -21,13 +21,13 @@ public:
 
 	void OnEvent(UETQuestEvent* QuestEvent);
 
-	void RegisterDataTable(UDataTable* InQuestDataTable);
-
 	void RegisterManagerListener(UETQuestManagerComponent* Listener);
 
 	UETQuestManagerComponent* GetManagerListener(APlayerState* PlayerState);
 
-	FORCEINLINE UDataTable* GetQuestDataTable() const { return QuestDataTable; };
+	FORCEINLINE UDataTable* GetQuestDataTable() const { return QuestDataTable; }
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 private:
 
@@ -35,5 +35,7 @@ private:
 	TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ManagerListeners;
 
 	UPROPERTY()
-	UDataTable* QuestDataTable;
+	TObjectPtr<UDataTable> QuestDataTable;
+
+	void LoadSettings();
 };
