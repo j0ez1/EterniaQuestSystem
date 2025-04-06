@@ -36,7 +36,7 @@ void UETQuestSubsystem::RegisterManagerListener(UETQuestManagerComponent* Listen
 	UWorld* World = GEngine->GetWorldFromContextObject(Listener, EGetWorldErrorMode::LogAndReturnNull);
 	if (World) {
 		APlayerState* OwningPlayerState = Listener->GetOwner()->GetNetOwningPlayer()->GetPlayerController(World)->GetPlayerState<APlayerState>();
-		if (ManagerListeners[OwningPlayerState]) {
+		if (ManagerListeners.Contains(OwningPlayerState)) {
 			EQS_ULOGS_ERROR(TEXT("Only one registered Quest Manager per player is supported. Player %s tries to register more"),
 			                *GetNameSafe(OwningPlayerState))
 		}

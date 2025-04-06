@@ -32,7 +32,7 @@ public:
 private:
 
 	UPROPERTY()
-	TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ManagerListeners;
+	TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ManagerListeners = TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>>();
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> QuestDataTable;
