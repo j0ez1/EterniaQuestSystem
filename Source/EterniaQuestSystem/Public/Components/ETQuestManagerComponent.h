@@ -28,6 +28,8 @@ public:
 
 	void IncrementTaskProgress(const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment);
 
+	TArray<TObjectPtr<UETQuest>> GetQuests() const;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnQuestAccepted_QuestManager OnQuestAccepted;
 
@@ -35,7 +37,7 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, SaveGame)
+	UPROPERTY(SaveGame)
 	TMap<FName, TObjectPtr<UETQuest>> Quests;
 
 private:

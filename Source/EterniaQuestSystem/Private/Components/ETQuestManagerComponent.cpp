@@ -47,6 +47,12 @@ void UETQuestManagerComponent::IncrementTaskProgress(const FName& QuestId, const
 	}
 }
 
+TArray<TObjectPtr<UETQuest>> UETQuestManagerComponent::GetQuests() const {
+	TArray<TObjectPtr<UETQuest>> OutArray;
+	Quests.GenerateValueArray(OutArray);
+	return OutArray;
+}
+
 void UETQuestManagerComponent::InitializeComponent() {
 	Super::InitializeComponent();
 
