@@ -31,6 +31,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnQuestAccepted_QuestManager OnQuestAccepted;
 
+	virtual void InitializeComponent() override;
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, SaveGame)

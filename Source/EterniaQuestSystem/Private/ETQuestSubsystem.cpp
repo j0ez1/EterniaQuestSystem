@@ -28,18 +28,32 @@ void UETQuestSubsystem::RegisterManagerListener(UETQuestManagerComponent* Listen
 	if (Listener == nullptr) return;
 
 	UWorld* World = GEngine->GetWorldFromContextObject(Listener, EGetWorldErrorMode::LogAndReturnNull);
-	if (World) {
-		APlayerState* OwningPlayerState = Listener->GetOwner()->GetNetOwningPlayer()->GetPlayerController(World)->GetPlayerState<APlayerState>();
-		if (ManagerListeners.Contains(OwningPlayerState)) {
-			EQS_ULOGS_ERROR(TEXT("Only one registered Quest Manager per player is supported. Player %s tries to register more"),
-			                *GetNameSafe(OwningPlayerState))
+	if (!World) return;
+	
+	AActor* Owner = Listener->GetOwner();
+	APlayerState* OwningPlayerState = nullptr;
+	if (Owner->IsA(APlayerState::StaticClass())) {
+		OwningPlayerState = Cast<APlayerState>(Owner);
+	} else {
+		UPlayer* NetOwningPlayer = Owner->GetNetOwningPlayer();
+		APlayerController* PlayerController = NetOwningPlayer->GetPlayerController(World);
+		if (PlayerController) {
+			OwningPlayerState = PlayerController->GetPlayerState<APlayerState>();
 		}
-		ManagerListeners.Add(OwningPlayerState, Listener);
 	}
+	if (!OwningPlayerState) return;
+	
+	if (ManagerListeners.Contains(OwningPlayerState)) {
+		EQS_ULOGS_ERROR(TEXT("Only one registered Quest Manager per player is supported. Player [ID: %s] tries to register more"),
+		                *FString::FromInt(OwningPlayerState->GetPlayerId()))
+		return;
+	}
+	ManagerListeners.Add(OwningPlayerState, Listener);
 }
 
 UETQuestManagerComponent* UETQuestSubsystem::GetManagerListener(APlayerState* PlayerState) {
-	return ManagerListeners[PlayerState];
+	TObjectPtr<UETQuestManagerComponent>* Result = ManagerListeners.Find(PlayerState);
+	return Result ? *Result : nullptr;
 }
 
 void UETQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection) {

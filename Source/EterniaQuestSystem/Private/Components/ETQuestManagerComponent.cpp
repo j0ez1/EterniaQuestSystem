@@ -10,7 +10,7 @@
 
 UETQuestManagerComponent::UETQuestManagerComponent() {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	bWantsInitializeComponent = true;
 }
 
 void UETQuestManagerComponent::AcceptQuest(UETQuest* Quest) {
@@ -49,6 +49,8 @@ void UETQuestManagerComponent::IncrementTaskProgress(const FName& QuestId, const
 
 void UETQuestManagerComponent::BeginPlay() {
 	Super::BeginPlay();
+void UETQuestManagerComponent::InitializeComponent() {
+	Super::InitializeComponent();
 
 	RegisterInSubsystem();
 }
