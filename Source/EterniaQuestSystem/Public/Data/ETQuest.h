@@ -3,19 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ETQuestDefinition.h"
+#include "ETStatuses.h"
 #include "UObject/Object.h"
 #include "ETQuest.generated.h"
 
 class UETQuestStep;
 
-UENUM(BlueprintType)
-enum EQuestStatus : uint8 {
-	EQS_NotStarted UMETA(DisplayName = "Not Started"),
-	EQS_Accepted UMETA(DisplayName = "Accepted"),
-	EQS_Completed UMETA(DisplayName = "Completed"),
-	EQS_Failed UMETA(DisplayName = "Failed"),
-	EQS_MAX UMETA(DisplayName = "Invalid")
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatusChanged_Quest, UETQuest*, Quest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepAdded, UETQuestStep*, Step);
 
 /**
  * 
@@ -26,29 +22,48 @@ class ETERNIAQUESTSYSTEM_API UETQuest : public UObject {
 
 public:
 
-	void SetIsTracked(bool bInIsTracked);
-
-	bool CanChangeStatus(EQuestStatus InStatus);
+	void SetIsTracked(bool bInIsTracked) { bIsTracked = bInIsTracked; }
 
 	FORCEINLINE EQuestStatus GetStatus() const { return Status; }
 
-	FORCEINLINE bool SetStatus(EQuestStatus InStatus);
+	void SetDefinition(const FETQuestDefinition& InDefinition);
 
-	FORCEINLINE void SetDefinitionId(const FName& InDefinitionId) { DefinitionId = InDefinitionId; }
+	FORCEINLINE FName GetId() const { return Definition.Identifier; }
 
-	FORCEINLINE FName GetDefinitionId() const { return DefinitionId; }
+	void CompleteTask(const FName& QuestStepId, const FName& TaskId);
 
-protected:
+	void FailTask(const FName& QuestStepId, const FName& TaskId);
 
-	UPROPERTY()
-	TArray<TObjectPtr<UETQuestStep>> Steps;
+	void IncrementTaskProgress(const FName& QuestStepId, const FName& TaskId, int32 Increment);
 
-	UPROPERTY()
-	FName DefinitionId;
+	FText GetAcceptedDescription() const { return Definition.Description; }
 
-	UPROPERTY()
-	TEnumAsByte<EQuestStatus> Status = EQuestStatus::EQS_NotStarted;
+	FText GetFinishedDescription() const;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnStatusChanged_Quest OnStatusChanged;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintAssignable)
+	FOnStepAdded OnStepAdded;
+
+private:
+
+	UPROPERTY(BlueprintReadOnly, SaveGame, meta=(AllowPrivateAccess=true))
+	TMap<FName, TObjectPtr<UETQuestStep>> Steps;
+
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	FETQuestDefinition Definition;
+
+	UPROPERTY(SaveGame)
+	TEnumAsByte<EQuestStatus> Status = EQS_Accepted;
+
+	UPROPERTY(BlueprintReadOnly, SaveGame, meta=(AllowPrivateAccess=true))
 	bool bIsTracked;
+
+	UFUNCTION()
+	void OnStepStatusChanged(UETQuestStep* QuestStep);
+
+	UETQuestStep* CreateStepByDefinition(const FETQuestStepDefinition& StepDefinition);
+
+	void AddStepByDefinition(const FETQuestStepDefinition& StepDefinition);
 };

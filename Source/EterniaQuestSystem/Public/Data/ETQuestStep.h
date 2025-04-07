@@ -3,17 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ETQuestDefinition.h"
+#include "ETStatuses.h"
 #include "UObject/Object.h"
 #include "ETQuestStep.generated.h"
 
-UENUM(BlueprintType)
-enum EQuestStepStatus : uint8 {
-	EQSS_Active UMETA(DisplayName = "Active"),
-	EQSS_Completed UMETA(DisplayName = "Completed"),
-	EQSS_Failed UMETA(DisplayName = "Failed"),
-	EQSS_Ignored UMETA(DisplayName = "Ignored"),
-	EQSS_MAX UMETA(DisplayName = "Invalid")
-};
+class UETQuestTask;
+class UETQuestStep;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatusChanged_QuestStep, UETQuestStep*, Step);
 
 /**
  * 
@@ -21,4 +19,41 @@ enum EQuestStepStatus : uint8 {
 UCLASS()
 class ETERNIAQUESTSYSTEM_API UETQuestStep : public UObject {
 	GENERATED_BODY()
+
+public:
+
+	void SetDefinition(const FETQuestStepDefinition& InDefinition);
+
+	FName GetId() const { return Definition.Identifier; }
+
+	void IncrementTaskProgress(const FName& TaskId, int32 Increment);
+
+	void CompleteTask(const FName& TaskId);
+
+	void FailTask(const FName& TaskId);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStatusChanged_QuestStep OnStatusChanged;
+
+private:
+
+	UPROPERTY(BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = true))
+	TMap<FName, TObjectPtr<UETQuestTask>> Tasks;
+
+	UPROPERTY(BlueprintReadOnly, SaveGame, meta=(AllowPrivateAccess=true))
+	TEnumAsByte<EQuestStepStatus> Status = EQSS_Active;
+
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
+	FETQuestStepDefinition Definition;
+
+	void SetStatus(EQuestStepStatus NewStatus);
+
+	void SetTaskStatus(const FName TaskId, EQuestTaskStatus NewStatus);
+
+	UFUNCTION()
+	void OnTaskStatusChanged(UETQuestTask* UpdatedTask);
+	
+	void DoCleanup();
+
+	void AddTaskByDefinition(const FETQuestTaskDefinition& TaskDef);
 };

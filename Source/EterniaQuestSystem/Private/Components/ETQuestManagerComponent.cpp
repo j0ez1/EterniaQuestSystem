@@ -4,7 +4,6 @@
 #include "Components/ETQuestManagerComponent.h"
 
 #include "Helpers/ETLogging.h"
-#include "Helpers/ETQuestSystemStatics.h"
 #include "ETQuestSubsystem.h"
 #include "Data/ETQuest.h"
 
@@ -14,34 +13,38 @@ UETQuestManagerComponent::UETQuestManagerComponent() {
 
 }
 
-void UETQuestManagerComponent::AcceptQuest(const FName& QuestId) {
-	ChangeQuestStatus(QuestId, EQuestStatus::EQS_Accepted);
+void UETQuestManagerComponent::AcceptQuest(UETQuest* Quest) {
+	if (Quest && !Quests.Contains(Quest->GetId())) {
+		Quests.Add(Quest->GetId(), Quest);
+		OnQuestAccepted.Broadcast(this, Quest);
+	}
 }
 
-void UETQuestManagerComponent::ChangeQuestStatus(const FName& QuestId, EQuestStatus NewStatus) {
-	UETQuest* Quest;
-	if (Quests[QuestId] != nullptr) {
-		Quest = Quests[QuestId];
+void UETQuestManagerComponent::CompleteTask(const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
+	TObjectPtr<UETQuest>* QuestPtr = Quests.Find(QuestId);
+	if (QuestPtr && *QuestPtr) {
+		(*QuestPtr)->CompleteTask(QuestStepId, QuestTaskId);
 	} else {
-		Quest = UETQuestSystemStatics::CreateQuestById(this, QuestId);
-		Quests.Add(QuestId, Quest);
-	}
-	if (Quest->SetStatus(NewStatus)) {
-		OnQuestStatusChanged.Broadcast(this, Quest->GetDefinitionId(), Quest->GetStatus());	
+		EQS_ULOG_WARNING(TEXT("Cannot complete quest task: quest '%s' is not found"), *QuestId.ToString());
 	}
 }
 
-void UETQuestManagerComponent::ReceiveQuestEvent(UETQuestEvent* QuestEvent) {
-	
+void UETQuestManagerComponent::FailTask(const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
+	TObjectPtr<UETQuest>* QuestPtr = Quests.Find(QuestId);
+	if (QuestPtr && *QuestPtr) {
+		(*QuestPtr)->FailTask(QuestStepId, QuestTaskId);
+	} else {
+		EQS_ULOG_WARNING(TEXT("Cannot fail quest task: quest '%s' is not found"), *QuestId.ToString());
+	}
 }
 
-void UETQuestManagerComponent::CompleteTask(const FName& QuestTaskId) {
-}
-
-void UETQuestManagerComponent::FailTask(const FName& QuestTaskId) {
-}
-
-void UETQuestManagerComponent::IncrementTaskProgress(const FName& QuestTaskId, int32 Increment) {
+void UETQuestManagerComponent::IncrementTaskProgress(const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment) {
+	TObjectPtr<UETQuest>* QuestPtr = Quests.Find(QuestId);
+	if (QuestPtr && *QuestPtr) {
+		(*QuestPtr)->IncrementTaskProgress(QuestStepId, QuestTaskId, Increment);
+	} else {
+		EQS_ULOG_WARNING(TEXT("Cannot increment quest task progress: quest '%s' is not found"), *QuestId.ToString());
+	}
 }
 
 void UETQuestManagerComponent::BeginPlay() {
@@ -53,7 +56,7 @@ void UETQuestManagerComponent::BeginPlay() {
 void UETQuestManagerComponent::RegisterInSubsystem() {
 	UETQuestSubsystem* QuestWorldSubsystem = UETQuestSubsystem::GetCurrent(this);
 	if (QuestWorldSubsystem) {
-		QuestWorldSubsystem->RegisterManagerListener(this);	
+		QuestWorldSubsystem->RegisterManagerListener(this);
 	} else {
 		EQS_ULOG_ERROR(TEXT("Failed to register in quest subsystem because it is null"))
 	}

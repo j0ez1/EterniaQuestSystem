@@ -27,10 +27,10 @@ struct FETQuestTaskDefinition {
 	bool bMandatory = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 TargetNumber = -1;
+	int32 TargetNumber = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 TimeLimit = -1;
+	int32 TimeLimit = 0;
 };
 
 USTRUCT(BlueprintType, DisplayName="(Abstract) Step Decorator")

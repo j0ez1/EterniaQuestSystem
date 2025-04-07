@@ -6,10 +6,7 @@
 #include "ETQuestSubsystem.h"
 #include "Components/ETQuestManagerComponent.h"
 #include "Data/ETQuestDefinition.h"
-#include "Helpers/ETLogging.h"
-#include "Event/ETQuestEvent.h"
 #include "GameFramework/PlayerState.h"
-#include "StructUtils/InstancedStruct.h"
 
 UETQuestManagerComponent* UETQuestSystemStatics::GetQuestManagerForPlayer(APlayerState* PlayerState) {
 	if (!PlayerState) return nullptr;
@@ -23,47 +20,40 @@ UETQuestManagerComponent* UETQuestSystemStatics::GetQuestManagerForPlayer(APlaye
 void UETQuestSystemStatics::AcceptQuest(APlayerState* PlayerState, const FName& QuestId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
-
-	QuestManagerComponent->AcceptQuest(QuestId);
+	
+	UETQuest* Quest = CreateQuestById(QuestManagerComponent, QuestId);
+	QuestManagerComponent->AcceptQuest(Quest);
 }
 
-void UETQuestSystemStatics::IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestTaskId, int32 Increment) {
+void UETQuestSystemStatics::IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->IncrementTaskProgress(QuestTaskId, Increment);
+	QuestManagerComponent->IncrementTaskProgress(QuestId, QuestStepId, QuestTaskId, Increment);
 }
 
-void UETQuestSystemStatics::CompleteTask(APlayerState* PlayerState, const FName& QuestTaskId) {
+void UETQuestSystemStatics::CompleteTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->CompleteTask(QuestTaskId);
+	QuestManagerComponent->CompleteTask(QuestId, QuestStepId, QuestTaskId);
 }
 
-void UETQuestSystemStatics::FailTask(APlayerState* PlayerState, const FName& QuestTaskId) {
+void UETQuestSystemStatics::FailTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->FailTask(QuestTaskId);
+	QuestManagerComponent->FailTask(QuestId, QuestStepId, QuestTaskId);
 }
 
-UETQuest* UETQuestSystemStatics::CreateQuestById(UObject* WorldContextObject, const FName& QuestId) {
-	FETQuestDefinition QuestDefinition = GetQuestDefinitionById(WorldContextObject, QuestId);
-	return CreateQuestByDefinition(QuestDefinition);
+UETQuest* UETQuestSystemStatics::CreateQuestById(UObject* Outer, const FName& QuestId) {
+	FETQuestDefinition QuestDefinition = GetQuestDefinitionById(Outer, QuestId);
+	return CreateQuestByDefinition(Outer, QuestDefinition);
 }
 
-UETQuest* UETQuestSystemStatics::CreateQuestByDefinition(const FETQuestDefinition& QuestDefinition) {
-	UETQuest* Quest = NewObject<UETQuest>();
-
-	Quest->SetDefinitionId(QuestDefinition.Identifier);
-	for (FETQuestStepDefinition StepDefinition : QuestDefinition.Steps) {
-		for (const FInstancedStruct& Decorator : StepDefinition.Decorators) {
-			FETQuestStepDecorator StepDecorator = Decorator.Get<FETQuestStepDecorator>();
-			// TODO
-		}
-	}
-
+UETQuest* UETQuestSystemStatics::CreateQuestByDefinition(UObject* Outer, const FETQuestDefinition& QuestDefinition) {
+	UETQuest* Quest = NewObject<UETQuest>(Outer);
+	Quest->SetDefinition(QuestDefinition);
 	return Quest;
 }
 
@@ -79,19 +69,6 @@ FETQuestDefinition UETQuestSystemStatics::GetQuestDefinitionById(UObject* WorldC
 		}
 	}
 	return FETQuestDefinition();
-}
-
-void UETQuestSystemStatics::ReportQuestEvent(UETQuestEvent* QuestEvent) {
-	if (!QuestEvent) return;
-	if (!QuestEvent->GetReporter()) return;
-	
-	UETQuestSubsystem* QuestSubsystem = UETQuestSubsystem::GetCurrent(QuestEvent->GetReporter());
-	if (!QuestSubsystem) {
-		EQS_ULOGS_ERROR(TEXT("Failed to route quest event to subsystem: QuestSubsystem is null"))
-		return;
-	}
-	
-	QuestSubsystem->OnEvent(QuestEvent);
 }
 
 UDataTable* UETQuestSystemStatics::GetQuestDataTable(UObject* WorldContextObject) {

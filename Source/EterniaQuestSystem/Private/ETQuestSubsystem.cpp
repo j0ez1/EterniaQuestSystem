@@ -24,12 +24,6 @@ UETQuestSubsystem* UETQuestSubsystem::GetCurrent(UObject* WorldContextObject) {
 	return nullptr;
 }
 
-void UETQuestSubsystem::OnEvent(UETQuestEvent* QuestEvent) {
-	for (TTuple<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ListenerEntry : ManagerListeners) {
-		ListenerEntry.Value->ReceiveQuestEvent(QuestEvent);
-	}
-}
-
 void UETQuestSubsystem::RegisterManagerListener(UETQuestManagerComponent* Listener) {
 	if (Listener == nullptr) return;
 

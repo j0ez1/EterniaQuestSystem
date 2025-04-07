@@ -7,7 +7,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ETQuestSystemStatics.generated.h"
 
-class UETQuestEvent;
 struct FETQuestDefinition;
 class UETQuestManagerComponent;
 /**
@@ -25,26 +24,22 @@ public:
 	static void AcceptQuest(APlayerState* PlayerState, const FName& QuestId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestTaskId, int32 Increment = 1);
+	static void IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment = 1);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void CompleteTask(APlayerState* PlayerState, const FName& QuestTaskId);
+	static void CompleteTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void FailTask(APlayerState* PlayerState, const FName& QuestTaskId);
-
-	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static UETQuest* CreateQuestById(UObject* WorldContextObject, const FName& QuestId);
-
-	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static UETQuest* CreateQuestByDefinition(const FETQuestDefinition& QuestDefinition);
+	static void FailTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
 	static FETQuestDefinition GetQuestDefinitionById(UObject* WorldContextObject, const FName& QuestId);
 
-	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void ReportQuestEvent(UETQuestEvent* QuestEvent);
-
 private:
+
+	static UETQuest* CreateQuestById(UObject* Outer, const FName& QuestId);
+
+	static UETQuest* CreateQuestByDefinition(UObject* Outer, const FETQuestDefinition& QuestDefinition);
+	
 	static UDataTable* GetQuestDataTable(UObject* WorldContextObject);
 };

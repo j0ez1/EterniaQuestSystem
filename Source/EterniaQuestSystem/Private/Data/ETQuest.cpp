@@ -3,21 +3,68 @@
 
 #include "Data/ETQuest.h"
 
-void UETQuest::SetIsTracked(bool bInIsTracked) {
+#include "Data/ETQuestDefinition.h"
+#include "Data/ETQuestStep.h"
 
-}
+void UETQuest::SetDefinition(const FETQuestDefinition& InDefinition) {
+	if (Definition.Identifier == InDefinition.Identifier) return;
 
-bool UETQuest::CanChangeStatus(EQuestStatus InStatus) {
-	return Status != InStatus
-	// TODO
-	// && (Status == EQuestStatus::EQS_NotStarted && (InStatus == EQuestStatus::EQS_Accepted || InStatus == EQuestStatus::EQS_Completed || InStatus == EQuestStatus::EQS_Failed))
-	;
-}
-
-bool UETQuest::SetStatus(EQuestStatus InStatus) {
-	if (CanChangeStatus(InStatus)) {
-		Status = InStatus;
-		return true;
+	Definition = InDefinition;
+	Steps.Empty();
+	if (!InDefinition.Steps.IsEmpty()) {
+		FETQuestStepDefinition StepDefinition = InDefinition.Steps[0];
+		AddStepByDefinition(StepDefinition);
 	}
-	return false;
+}
+
+void UETQuest::CompleteTask(const FName& QuestStepId, const FName& TaskId) {
+	if (Status != EQS_Accepted) return;
+
+	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
+	if (Step && *Step) {
+		(*Step)->CompleteTask(TaskId);
+	}
+}
+
+void UETQuest::FailTask(const FName& QuestStepId, const FName& TaskId) {
+	if (Status != EQS_Accepted) return;
+
+	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
+	if (Step && *Step) {
+		(*Step)->FailTask(TaskId);
+	}
+}
+
+void UETQuest::IncrementTaskProgress(const FName& QuestStepId, const FName& TaskId, int32 Increment) {
+	if (Status != EQS_Accepted) return;
+
+	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
+	if (Step && *Step) {
+		(*Step)->IncrementTaskProgress(TaskId, Increment);
+	}
+}
+
+FText UETQuest::GetFinishedDescription() const {
+	switch (Status) {
+		case EQS_Failed: return Definition.FailureDescription;
+		case EQSS_Completed: return Definition.SuccessDescription;
+		default: return FText();
+	}
+}
+
+void UETQuest::OnStepStatusChanged(UETQuestStep* QuestStep) {
+	
+}
+
+UETQuestStep* UETQuest::CreateStepByDefinition(const FETQuestStepDefinition& StepDefinition) {
+	UETQuestStep* Result = NewObject<UETQuestStep>(GetOuter());
+	Result->SetDefinition(StepDefinition);
+	return Result;
+}
+
+void UETQuest::AddStepByDefinition(const FETQuestStepDefinition& StepDefinition) {
+	UETQuestStep* NewStep = CreateStepByDefinition(StepDefinition);
+	NewStep->OnStatusChanged.AddUniqueDynamic(this, &UETQuest::OnStepStatusChanged);
+	Steps.Add(StepDefinition.Identifier, NewStep);
+	OnStepAdded.Broadcast(NewStep);
 }

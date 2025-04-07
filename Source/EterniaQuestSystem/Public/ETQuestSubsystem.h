@@ -7,7 +7,6 @@
 #include "ETQuestSubsystem.generated.h"
 
 class UETQuestManagerComponent;
-class UETQuestEvent;
 /**
  * 
  */
@@ -18,8 +17,6 @@ class ETERNIAQUESTSYSTEM_API UETQuestSubsystem : public UGameInstanceSubsystem {
 public:
 
 	static UETQuestSubsystem* GetCurrent(UObject* WorldContextObject);
-
-	void OnEvent(UETQuestEvent* QuestEvent);
 
 	void RegisterManagerListener(UETQuestManagerComponent* Listener);
 
@@ -32,7 +29,7 @@ public:
 private:
 
 	UPROPERTY()
-	TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ManagerListeners = TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>>();
+	TMap<TObjectPtr<APlayerState>, TObjectPtr<UETQuestManagerComponent>> ManagerListeners;
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> QuestDataTable;
