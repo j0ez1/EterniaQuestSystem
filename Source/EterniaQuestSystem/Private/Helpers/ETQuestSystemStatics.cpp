@@ -17,33 +17,33 @@ UETQuestManagerComponent* UETQuestSystemStatics::GetQuestManagerForPlayer(APlaye
 	return QuestSubsystem->GetManagerListener(PlayerState);
 }
 
-void UETQuestSystemStatics::AcceptQuest(APlayerState* PlayerState, const FName& QuestId) {
+void UETQuestSystemStatics::AcceptQuest(APlayerState* PlayerState, const FString& QuestId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 	
-	UETQuest* Quest = CreateQuestById(QuestManagerComponent, QuestId);
+	UETQuest* Quest = CreateQuestById(QuestManagerComponent, FName(QuestId));
 	QuestManagerComponent->AcceptQuest(Quest);
 }
 
-void UETQuestSystemStatics::IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment) {
+void UETQuestSystemStatics::IncrementTaskProgress(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId, int32 Increment) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->IncrementTaskProgress(QuestId, QuestStepId, QuestTaskId, Increment);
+	QuestManagerComponent->IncrementTaskProgress(FName(QuestId), FName(QuestStepId), FName(QuestTaskId), Increment);
 }
 
-void UETQuestSystemStatics::CompleteTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
+void UETQuestSystemStatics::CompleteTask(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->CompleteTask(QuestId, QuestStepId, QuestTaskId);
+	QuestManagerComponent->CompleteTask(FName(QuestId), FName(QuestStepId), FName(QuestTaskId));
 }
 
-void UETQuestSystemStatics::FailTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId) {
+void UETQuestSystemStatics::FailTask(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId) {
 	UETQuestManagerComponent* QuestManagerComponent = GetQuestManagerForPlayer(PlayerState);
 	if (!QuestManagerComponent) return;
 
-	QuestManagerComponent->FailTask(QuestId, QuestStepId, QuestTaskId);
+	QuestManagerComponent->FailTask(FName(QuestId), FName(QuestStepId), FName(QuestTaskId));
 }
 
 UETQuest* UETQuestSystemStatics::CreateQuestById(UObject* Outer, const FName& QuestId) {
@@ -64,7 +64,7 @@ FETQuestDefinition UETQuestSystemStatics::GetQuestDefinitionById(UObject* WorldC
 	TArray<FETQuestDefinition*> QuestDefinitions;
 	QuestDataTable->GetAllRows<FETQuestDefinition>("", QuestDefinitions);
 	for (FETQuestDefinition* QuestDefinition : QuestDefinitions) {
-		if (QuestDefinition->Identifier == QuestId) {
+		if (QuestDefinition->Identifier.IsEqual(QuestId)) {
 			return *QuestDefinition;
 		}
 	}

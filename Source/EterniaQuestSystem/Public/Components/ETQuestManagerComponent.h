@@ -38,8 +38,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, SaveGame)
 	TMap<FName, TObjectPtr<UETQuest>> Quests;
 
-	virtual void BeginPlay() override;
-
 private:
 
 	void RegisterInSubsystem();

@@ -21,16 +21,16 @@ public:
 	static UETQuestManagerComponent* GetQuestManagerForPlayer(APlayerState* PlayerState);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void AcceptQuest(APlayerState* PlayerState, const FName& QuestId);
+	static void AcceptQuest(APlayerState* PlayerState, const FString& QuestId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void IncrementTaskProgress(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId, int32 Increment = 1);
+	static void IncrementTaskProgress(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId, int32 Increment = 1);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void CompleteTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId);
+	static void CompleteTask(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
-	static void FailTask(APlayerState* PlayerState, const FName& QuestId, const FName& QuestStepId, const FName& QuestTaskId);
+	static void FailTask(APlayerState* PlayerState, const FString& QuestId, const FString& QuestStepId, const FString& QuestTaskId);
 
 	UFUNCTION(BlueprintCallable, Category="Eternia|Quest")
 	static FETQuestDefinition GetQuestDefinitionById(UObject* WorldContextObject, const FName& QuestId);
