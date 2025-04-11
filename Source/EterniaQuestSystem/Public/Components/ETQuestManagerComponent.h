@@ -10,7 +10,7 @@
 class UETQuestEvent;
 class UETQuest;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnQuestAccepted_QuestManager, UETQuestManagerComponent*, QuestManager, UETQuest*, AcceptedQuest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnQuestStatusChanged_QuestManager, UETQuestManagerComponent*, QuestManager, UETQuest*, AcceptedQuest);
 
 UCLASS(ClassGroup=(Custom), DisplayName="Quest Manager", Category="Eternia", meta=(BlueprintSpawnableComponent))
 class ETERNIAQUESTSYSTEM_API UETQuestManagerComponent : public UActorComponent {
@@ -31,7 +31,7 @@ public:
 	TArray<TObjectPtr<UETQuest>> GetQuests() const;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnQuestAccepted_QuestManager OnQuestAccepted;
+	FOnQuestStatusChanged_QuestManager OnQuestStatusChanged;
 
 	virtual void InitializeComponent() override;
 
@@ -39,6 +39,9 @@ protected:
 
 	UPROPERTY(SaveGame)
 	TMap<FName, TObjectPtr<UETQuest>> Quests;
+
+	UFUNCTION()
+	void OnStatusChanged_Quest(UETQuest* Quest);
 
 private:
 

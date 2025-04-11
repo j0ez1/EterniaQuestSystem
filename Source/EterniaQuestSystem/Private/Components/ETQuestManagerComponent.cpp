@@ -16,7 +16,9 @@ UETQuestManagerComponent::UETQuestManagerComponent() {
 void UETQuestManagerComponent::AcceptQuest(UETQuest* Quest) {
 	if (Quest && !Quests.Contains(Quest->GetId())) {
 		Quests.Add(Quest->GetId(), Quest);
-		OnQuestAccepted.Broadcast(this, Quest);
+
+		Quest->OnStatusChanged.AddUniqueDynamic(this, &UETQuestManagerComponent::OnStatusChanged_Quest);
+		OnStatusChanged_Quest(Quest);
 	}
 }
 
@@ -57,6 +59,10 @@ void UETQuestManagerComponent::InitializeComponent() {
 	Super::InitializeComponent();
 
 	RegisterInSubsystem();
+}
+
+void UETQuestManagerComponent::OnStatusChanged_Quest(UETQuest* Quest) {
+	OnQuestStatusChanged.Broadcast(this, Quest);
 }
 
 void UETQuestManagerComponent::RegisterInSubsystem() {

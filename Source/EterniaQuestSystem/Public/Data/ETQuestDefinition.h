@@ -10,26 +10,50 @@
 enum EQuestStepStatus : uint8;
 class UKismetGuidLibrary;
 
+/*
+ * Definition of a single task within quest step
+ */
 USTRUCT(BlueprintType)
 struct FETQuestTaskDefinition {
 	GENERATED_BODY()
 
+	/*
+	 * Task identifier. Must be unique within step
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Identifier = NAME_None;
 
+	/*
+	 * Task title
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText Title = FText();
 
+	/*
+	 * Task description
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText Description = FText();
 
+	/*
+	 * All mandatory tasks must be completed in order to complete the step they belong to.
+	 * Uncompleted optional tasks will be skipped if their step is completed or failed
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bMandatory = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	/*
+	 * The number of similar actions within a task that a player has to do, e.g. number of killed monsters or collected items.
+	 * 0 - no target number, yes-no type of task
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin="0", UIMin="0"))
 	int32 TargetNumber = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	/*
+	 * The amount of time (in seconds) after which a task will be automatically failed.
+	 * 0 - no time limit
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin="0", UIMin="0"))
 	int32 TimeLimit = 0;
 };
 
@@ -144,14 +168,8 @@ struct FETQuestStepDefinition {
 	FGuid GUID = UKismetGuidLibrary::NewGuid();
 };
 
-USTRUCT(BlueprintType, DisplayName="(Abstract) Quest Decorator")
-struct FETQuestDecorator {
-	GENERATED_BODY()
-
-};
-
-USTRUCT(DisplayName="Requires Quest Completion")
-struct FETQuestDecorator_RequiresQuestCompletion : public FETQuestDecorator {
+USTRUCT(BlueprintType, DisplayName="Requires Quest Completion")
+struct FETQuestDefinition_RequiredQuest {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -168,7 +186,7 @@ struct FETQuestDecorator_RequiresQuestCompletion : public FETQuestDecorator {
 };
 
 /**
- * 
+ * Quest definition
  */
 USTRUCT(BlueprintType)
 struct FETQuestDefinition : public FTableRowBase {
@@ -176,9 +194,15 @@ struct FETQuestDefinition : public FTableRowBase {
 
 	FETQuestDefinition() {}
 
+	/*
+	 * Quest identifier. Must be unique within game
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Identifier = NAME_None;
 
+	/*
+	 * Quest title
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText Title = FText();
 
@@ -203,8 +227,8 @@ struct FETQuestDefinition : public FTableRowBase {
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FETQuestStepDefinition> Steps = TArray<FETQuestStepDefinition>();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BaseStruct="ETQuestDecorator"))
-	TArray<FInstancedStruct> Decorators = TArray<FInstancedStruct>();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FETQuestDefinition_RequiredQuest> RequiredQuests = TArray<FETQuestDefinition_RequiredQuest>();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGuid GUID = UKismetGuidLibrary::NewGuid();

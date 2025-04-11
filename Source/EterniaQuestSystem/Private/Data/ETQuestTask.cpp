@@ -3,6 +3,8 @@
 
 #include "Data/ETQuestTask.h"
 
+#include "Helpers/ETLogging.h"
+
 void UETQuestTask::ResetTimer() {
 	if (Definition.TimeLimit > 0) {
 		GetWorld()->GetTimerManager().SetTimer(Timer, this, &UETQuestTask::OnTimerFinished, Definition.TimeLimit, false);
@@ -39,6 +41,10 @@ void UETQuestTask::SetProgress(int32 NewProgress) {
 }
 
 void UETQuestTask::IncrementProgress(int32 Increment) {
+	if (Definition.TargetNumber <= 0) {
+		EQS_ULOGO_WARNING(TEXT("Cannot increment progress for a task '%s' with TargetNumber equal to 0"), *Definition.Identifier.ToString())
+		return;
+	}
 	int32 NewProgress = FMath::Clamp(Progress + Increment, 0, Definition.TargetNumber);
 	SetProgress(NewProgress);
 }

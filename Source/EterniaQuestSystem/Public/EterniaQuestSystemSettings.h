@@ -18,4 +18,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Config, meta = (RequiredAssetDataTags = "RowStructure=/Script/EterniaQuestSystem.ETQuestDefinition"))
 	TSoftObjectPtr<UDataTable> QuestData;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Config)
+	// bool bPauseTaskTimersOnGamePause = true;
+
+	/*
+	 * true - all sequential quest step tasks will be added on step creation.
+	 * false - a new task will be added if previous one is successfully finished
+	 */
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Config)
+	// bool bAddAllSequentialTasks = false;
 };
