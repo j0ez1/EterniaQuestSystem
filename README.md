@@ -1,9 +1,9 @@
 # Eternia Quest System (EQS)
 
-EQS is a data-driven quest system plugin for Unreal Engine which I use in my pet project. It provides a simple interface without complicated
-pre-configuration and rich blueprint support.
+EQS is a data-driven quest system plugin for Unreal Engine which I use in my pet project. It provides a simple interface and rich blueprint support without complicated
+pre-configuration.
 
-**At the moment, the plugin is extremely unstable and is under active development. Use at your own risk!**
+**At the moment, the plugin is extremely unstable and is under active development. FOR EDUCATIONAL PURPOSES ONLY, DO NOT USE IN PRODUCTION CODE!**
 
 ## Features
 
