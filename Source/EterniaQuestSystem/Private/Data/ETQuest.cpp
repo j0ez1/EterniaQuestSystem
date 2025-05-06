@@ -6,6 +6,11 @@
 #include "Data/ETQuestDefinition.h"
 #include "Data/ETQuestStep.h"
 
+UETQuest::UETQuest(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+, Status(EQuestStatus::EQS_Accepted) {
+}
+
 void UETQuest::SetDefinition(const FETQuestDefinition& InDefinition) {
 	if (Definition.Identifier == InDefinition.Identifier) return;
 
@@ -18,7 +23,7 @@ void UETQuest::SetDefinition(const FETQuestDefinition& InDefinition) {
 }
 
 void UETQuest::CompleteTask(const FName& QuestStepId, const FName& TaskId) {
-	if (Status != EQS_Accepted) return;
+	if (Status != EQuestStatus::EQS_Accepted) return;
 
 	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
 	if (Step && *Step) {
@@ -27,7 +32,7 @@ void UETQuest::CompleteTask(const FName& QuestStepId, const FName& TaskId) {
 }
 
 void UETQuest::FailTask(const FName& QuestStepId, const FName& TaskId) {
-	if (Status != EQS_Accepted) return;
+	if (Status != EQuestStatus::EQS_Accepted) return;
 
 	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
 	if (Step && *Step) {
@@ -36,7 +41,7 @@ void UETQuest::FailTask(const FName& QuestStepId, const FName& TaskId) {
 }
 
 void UETQuest::IncrementTaskProgress(const FName& QuestStepId, const FName& TaskId, int32 Increment) {
-	if (Status != EQS_Accepted) return;
+	if (Status != EQuestStatus::EQS_Accepted) return;
 
 	TObjectPtr<UETQuestStep>* Step = Steps.Find(QuestStepId);
 	if (Step && *Step) {
@@ -46,14 +51,14 @@ void UETQuest::IncrementTaskProgress(const FName& QuestStepId, const FName& Task
 
 FText UETQuest::GetFinishedDescription() const {
 	switch (Status) {
-		case EQS_Failed: return Definition.FailureDescription;
-		case EQSS_Completed: return Definition.SuccessDescription;
+		case EQuestStatus::EQS_Failed: return Definition.FailureDescription;
+		case EQuestStatus::EQS_Completed: return Definition.SuccessDescription;
 		default: return FText();
 	}
 }
 
 void UETQuest::OnStepStatusChanged(UETQuestStep* QuestStep) {
-	
+
 }
 
 UETQuestStep* UETQuest::CreateStepByDefinition(const FETQuestStepDefinition& StepDefinition) {

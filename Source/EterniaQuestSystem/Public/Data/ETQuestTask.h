@@ -23,6 +23,8 @@ class ETERNIAQUESTSYSTEM_API UETQuestTask : public UObject {
 
 public:
 
+	UETQuestTask(const FObjectInitializer& ObjectInitializer);
+
 	void ResetTimer();
 
 	void SetDefinition(const FETQuestTaskDefinition& InDefinition);
@@ -36,9 +38,9 @@ public:
 
 	EQuestTaskStatus GetStatus() const { return Status; }
 
-	bool IsFailed() const { return Status == EQTS_Failed; }
+	bool IsFailed() const { return Status == EQuestTaskStatus::EQTS_Failed; }
 
-	bool IsCompleted() const { return Status == EQTS_Completed; }
+	bool IsCompleted() const { return Status == EQuestTaskStatus::EQTS_Completed; }
 
 	void IncrementProgress(int32 Increment);
 
@@ -56,10 +58,10 @@ private:
 	FETQuestTaskDefinition Definition;
 
 	UPROPERTY(BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = true))
-	TEnumAsByte<EQuestTaskStatus> Status = EQTS_Active;
+	EQuestTaskStatus Status;
 
 	UPROPERTY(BlueprintReadOnly, SaveGame, meta = (AllowPrivateAccess = true))
-	int32 Progress = 0;
+	int32 Progress;
 
 	FTimerHandle Timer;
 

@@ -22,6 +22,8 @@ class ETERNIAQUESTSYSTEM_API UETQuestStep : public UObject {
 
 public:
 
+	UETQuestStep(const FObjectInitializer& ObjectInitializer);
+
 	void SetDefinition(const FETQuestStepDefinition& InDefinition);
 
 	FName GetId() const { return Definition.Identifier; }
@@ -41,7 +43,7 @@ private:
 	TMap<FName, TObjectPtr<UETQuestTask>> Tasks;
 
 	UPROPERTY(BlueprintReadOnly, SaveGame, meta=(AllowPrivateAccess=true))
-	TEnumAsByte<EQuestStepStatus> Status = EQSS_Active;
+	EQuestStepStatus Status;
 
 	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	FETQuestStepDefinition Definition;

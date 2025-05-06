@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
-enum EQuestStatus : uint8 {
+enum class EQuestStatus : uint8 {
 	EQS_Accepted UMETA(DisplayName = "Accepted"),
 	EQS_Completed UMETA(DisplayName = "Completed"),
 	EQS_Failed UMETA(DisplayName = "Failed"),
@@ -13,7 +13,7 @@ enum EQuestStatus : uint8 {
 };
 
 UENUM(BlueprintType)
-enum EQuestStepStatus : uint8 {
+enum class EQuestStepStatus : uint8 {
 	EQSS_Active UMETA(DisplayName = "Active"),
 	EQSS_Completed UMETA(DisplayName = "Completed"),
 	EQSS_Failed UMETA(DisplayName = "Failed"),
@@ -21,7 +21,7 @@ enum EQuestStepStatus : uint8 {
 };
 
 UENUM(BlueprintType)
-enum EQuestTaskStatus : uint8 {
+enum class EQuestTaskStatus : uint8 {
 	EQTS_Active UMETA(DisplayName = "Active"),
 	EQTS_Completed UMETA(DisplayName = "Completed"),
 	EQTS_Failed UMETA(DisplayName = "Failed"),

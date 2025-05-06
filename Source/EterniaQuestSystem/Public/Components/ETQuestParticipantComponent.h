@@ -6,9 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "ETQuestParticipantComponent.generated.h"
 
-enum EQuestTaskStatus : uint8;
-enum EQuestStepStatus : uint8;
-enum EQuestStatus : uint8;
+enum class EQuestTaskStatus : uint8;
+enum class EQuestStepStatus : uint8;
+enum class EQuestStatus : uint8;
 
 USTRUCT(BlueprintType)
 struct FQuestUpdate {
@@ -21,19 +21,19 @@ struct FQuestUpdate {
 	FName QuestId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EQuestStatus> QuestStatus;
+	EQuestStatus QuestStatus;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName QuestStepId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EQuestStepStatus> QuestStepStatus;
+	EQuestStepStatus QuestStepStatus;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName QuestTaskId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EQuestTaskStatus> QuestTaskStatus;
+	EQuestTaskStatus QuestTaskStatus;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestUpdated, const FQuestUpdate&, QuestUpdate);

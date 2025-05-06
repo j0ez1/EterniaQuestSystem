@@ -6,6 +6,11 @@
 #include "Data/ETQuestTask.h"
 #include "Helpers/ETLogging.h"
 
+UETQuestStep::UETQuestStep(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+, Status(EQuestStepStatus::EQSS_Active) {
+}
+
 void UETQuestStep::SetDefinition(const FETQuestStepDefinition& InDefinition) {
 	if (Definition.Identifier == InDefinition.Identifier) return;
 
@@ -35,15 +40,15 @@ void UETQuestStep::IncrementTaskProgress(const FName& TaskId, int32 Increment) {
 }
 
 void UETQuestStep::CompleteTask(const FName& TaskId) {
-	SetTaskStatus(TaskId, EQTS_Completed);
+	SetTaskStatus(TaskId, EQuestTaskStatus::EQTS_Completed);
 }
 
 void UETQuestStep::FailTask(const FName& TaskId) {
-	SetTaskStatus(TaskId, EQTS_Failed);
+	SetTaskStatus(TaskId, EQuestTaskStatus::EQTS_Failed);
 }
 
 void UETQuestStep::SetStatus(EQuestStepStatus NewStatus) {
-	if (Status == NewStatus || Status == EQSS_Completed || Status == EQSS_Failed) return;
+	if (Status == NewStatus || Status == EQuestStepStatus::EQSS_Completed || Status == EQuestStepStatus::EQSS_Failed) return;
 
 	Status = NewStatus;
 	OnStatusChanged.Broadcast(this);
@@ -59,9 +64,9 @@ void UETQuestStep::SetTaskStatus(const FName TaskId, EQuestTaskStatus NewStatus)
 void UETQuestStep::OnTaskStatusChanged(UETQuestTask* UpdatedTask) {
 	if (UpdatedTask->IsFailed() && UpdatedTask->IsMandatory()) {
 		for (auto ExistingTask : Tasks) {
-			ExistingTask.Value->SetStatus(EQTS_Skipped);
+			ExistingTask.Value->SetStatus(EQuestTaskStatus::EQTS_Skipped);
 		}
-		SetStatus(EQSS_Failed);
+		SetStatus(EQuestStepStatus::EQSS_Failed);
 	} else if (UpdatedTask->IsCompleted()) {
 		bool bAreMandatoryTasksCompleted = true;
 		for (auto ExistingTask : Tasks) {
@@ -73,10 +78,10 @@ void UETQuestStep::OnTaskStatusChanged(UETQuestTask* UpdatedTask) {
 		if (bAreMandatoryTasksCompleted) {
 			for (auto ExistingTask : Tasks) {
 				if (!ExistingTask.Value->IsMandatory()) {
-					ExistingTask.Value->SetStatus(EQTS_Skipped);
+					ExistingTask.Value->SetStatus(EQuestTaskStatus::EQTS_Skipped);
 				}
 			}
-			SetStatus(EQSS_Completed);
+			SetStatus(EQuestStepStatus::EQSS_Completed);
 		}
 	}
 }

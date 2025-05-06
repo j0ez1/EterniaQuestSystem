@@ -5,6 +5,12 @@
 
 #include "Helpers/ETLogging.h"
 
+UETQuestTask::UETQuestTask(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+, Status(EQuestTaskStatus::EQTS_Active)
+, Progress(0) {
+}
+
 void UETQuestTask::ResetTimer() {
 	if (Definition.TimeLimit > 0) {
 		GetWorld()->GetTimerManager().SetTimer(Timer, this, &UETQuestTask::OnTimerFinished, Definition.TimeLimit, false);
@@ -19,14 +25,15 @@ void UETQuestTask::SetDefinition(const FETQuestTaskDefinition& InDefinition) {
 }
 
 void UETQuestTask::SetStatus(EQuestTaskStatus NewStatus) {
-	if (Status == NewStatus || Status == EQTS_Completed || Status == EQTS_Failed || Status == EQTS_Skipped) return;
+	if (Status == NewStatus || Status == EQuestTaskStatus::EQTS_Completed || Status == EQuestTaskStatus::EQTS_Failed || Status ==
+		EQuestTaskStatus::EQTS_Skipped) return;
 
 	Status = NewStatus;
 
-	if (Status != EQTS_Active) {
+	if (Status != EQuestTaskStatus::EQTS_Active) {
 		StopTimer();
 	}
-	
+
 	OnStatusChanged.Broadcast(this);
 }
 
@@ -35,7 +42,7 @@ void UETQuestTask::SetProgress(int32 NewProgress) {
 		Progress = NewProgress;
 		OnProgressUpdate.Broadcast(this);
 		if (Progress == Definition.TargetNumber) {
-			SetStatus(EQTS_Completed);
+			SetStatus(EQuestTaskStatus::EQTS_Completed);
 		}
 	}
 }
@@ -50,9 +57,9 @@ void UETQuestTask::IncrementProgress(int32 Increment) {
 }
 
 void UETQuestTask::OnTimerFinished() {
-	SetStatus(EQTS_Failed);
+	SetStatus(EQuestTaskStatus::EQTS_Failed);
 }
 
 void UETQuestTask::StopTimer() {
-	GetWorld()->GetTimerManager().ClearTimer(Timer);	
+	GetWorld()->GetTimerManager().ClearTimer(Timer);
 }

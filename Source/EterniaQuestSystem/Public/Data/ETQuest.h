@@ -22,6 +22,8 @@ class ETERNIAQUESTSYSTEM_API UETQuest : public UObject {
 
 public:
 
+	UETQuest(const FObjectInitializer& ObjectInitializer);
+
 	void SetIsTracked(bool bInIsTracked) { bIsTracked = bInIsTracked; }
 
 	FORCEINLINE EQuestStatus GetStatus() const { return Status; }
@@ -55,7 +57,7 @@ private:
 	FETQuestDefinition Definition;
 
 	UPROPERTY(SaveGame)
-	TEnumAsByte<EQuestStatus> Status = EQS_Accepted;
+	EQuestStatus Status;
 
 	UPROPERTY(BlueprintReadOnly, SaveGame, meta=(AllowPrivateAccess=true))
 	bool bIsTracked;

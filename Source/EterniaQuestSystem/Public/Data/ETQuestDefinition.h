@@ -7,7 +7,7 @@
 #include "StructUtils/InstancedStruct.h"
 #include "ETQuestDefinition.generated.h"
 
-enum EQuestStepStatus : uint8;
+enum class EQuestStepStatus : uint8;
 class UKismetGuidLibrary;
 
 /*
@@ -108,7 +108,7 @@ struct FETQuestStepDecorator_CompleteOnStepCompletion : public FETQuestStepDecor
 	bool bCompleteOnStepFailure = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TEnumAsByte<EQuestStepStatus> StatusToSet;
+	EQuestStepStatus StatusToSet;
 };
 
 USTRUCT(DisplayName="Complete On Quest Completion")
@@ -125,7 +125,7 @@ struct FETQuestStepDecorator_CompleteOnQuestCompletion : public FETQuestStepDeco
 	bool bCompleteOnQuestFailure = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TEnumAsByte<EQuestStepStatus> StatusToSet;
+	EQuestStepStatus StatusToSet;
 };
 
 USTRUCT(BlueprintType)
