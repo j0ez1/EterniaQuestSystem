@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/KismetGuidLibrary.h"
 #include "StructUtils/InstancedStruct.h"
+#include "Data/ETStatuses.h"
 #include "ETQuestDefinition.generated.h"
 
 enum class EQuestStepStatus : uint8;
@@ -71,10 +72,10 @@ struct FETQuestStepDecorator_RequiresStepCompletion : public FETQuestStepDecorat
 	FName StepId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bActivateOnStepSuccess;
+	bool bActivateOnStepSuccess = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bActivateOnStepFailure;
+	bool bActivateOnStepFailure = false;
 
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	// bool bCompleteRequiredStepOnActivation = true;
@@ -88,10 +89,10 @@ struct FETQuestStepDecorator_RequiresQuestCompletion : public FETQuestStepDecora
 	FName QuestId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bActivateOnQuestSuccess;
+	bool bActivateOnQuestSuccess = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bActivateOnQuestFailure;
+	bool bActivateOnQuestFailure = false;
 };
 
 USTRUCT(DisplayName="Complete On Step Completion")
@@ -108,7 +109,7 @@ struct FETQuestStepDecorator_CompleteOnStepCompletion : public FETQuestStepDecor
 	bool bCompleteOnStepFailure = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EQuestStepStatus StatusToSet;
+	EQuestStepStatus StatusToSet = EQuestStepStatus::EQSS_Active;
 };
 
 USTRUCT(DisplayName="Complete On Quest Completion")
@@ -125,7 +126,7 @@ struct FETQuestStepDecorator_CompleteOnQuestCompletion : public FETQuestStepDeco
 	bool bCompleteOnQuestFailure = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EQuestStepStatus StatusToSet;
+	EQuestStepStatus StatusToSet = EQuestStepStatus::EQSS_Active;
 };
 
 USTRUCT(BlueprintType)
@@ -161,10 +162,10 @@ struct FETQuestStepDefinition {
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FETQuestTaskDefinition> Tasks;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BaseStruct="ETQuestStepDecorator"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BaseStruct="/Script/EterniaQuestSystem.ETQuestStepDecorator"))
 	TArray<FInstancedStruct> Decorators;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(IgnoreForMemberInitializationTest))
 	FGuid GUID = UKismetGuidLibrary::NewGuid();
 };
 
@@ -176,13 +177,13 @@ struct FETQuestDefinition_RequiredQuest {
 	FName QuestId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUnlockOnQuestSuccess;
+	bool bUnlockOnQuestSuccess = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUnlockOnQuestFailure;
+	bool bUnlockOnQuestFailure = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bAutoActivateOnUnlock;
+	bool bAutoActivateOnUnlock = false;
 };
 
 /**
@@ -230,7 +231,7 @@ struct FETQuestDefinition : public FTableRowBase {
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FETQuestDefinition_RequiredQuest> RequiredQuests = TArray<FETQuestDefinition_RequiredQuest>();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(IgnoreForMemberInitializationTest))
 	FGuid GUID = UKismetGuidLibrary::NewGuid();
 
 };

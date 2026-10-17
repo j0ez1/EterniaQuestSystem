@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/ETStatuses.h"
 #include "ETQuestParticipantComponent.generated.h"
 
 enum class EQuestTaskStatus : uint8;
@@ -15,25 +16,25 @@ struct FQuestUpdate {
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPlayer* Player;
+	UPlayer* Player = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName QuestId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EQuestStatus QuestStatus;
+	EQuestStatus QuestStatus = EQuestStatus::EQS_Accepted;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName QuestStepId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EQuestStepStatus QuestStepStatus;
+	EQuestStepStatus QuestStepStatus = EQuestStepStatus::EQSS_Active;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName QuestTaskId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EQuestTaskStatus QuestTaskStatus;
+	EQuestTaskStatus QuestTaskStatus = EQuestTaskStatus::EQTS_Active;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestUpdated, const FQuestUpdate&, QuestUpdate);
